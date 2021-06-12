@@ -8,7 +8,17 @@ Window {
     height: 480
     visible: true
     title: qsTr("Hello World")
-    color: "black"
+    color: "white"
+
+    // Cheap, "fake" dropshadow
+    Image {
+        anchors {
+            fill: dragArea
+            margins: -15
+        }
+        source: "qrc:/radial-shadow.png"
+        smooth: true
+    }
 
     Rectangle {
         id: dragArea
@@ -17,14 +27,7 @@ Window {
         width: 200
         height: width
         radius: Math.max(width/2, height/2)
-        color: "white"
-
-        // Some retro-glossy skeumorphic shit
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: "lightgray" }
-            GradientStop { position: 0.33; color: "gray" }
-            GradientStop { position: 1.0; color: "white" }
-        }
+        color: dragMouseArea.containsMouse ? "black" : "white"
 
         Item {
             id: dragIndicator
@@ -35,40 +38,25 @@ Window {
             x: defaultX
             y: defaultY
 
+            Image {
+                anchors {
+                    fill: dragIndicatorRect
+                    margins: -10
+                }
+                source: dragMouseArea.containsMouse ? "qrc:/radial-shadow-invert.png" : "qrc:/radial-shadow.png"
+                smooth: true
+                opacity: dragMouseArea.containsMouse ? 1 : 0.2
+            }
 
             Rectangle {
                 id: dragIndicatorRect
-                visible: dragMouseArea.containsMouse
-                color: "black"
+                anchors.centerIn: parent
+                color: "white"
                 width: parent.width
                 height: parent.height
-                anchors.centerIn: parent
                 radius: width/2
             }
         }
-        Rectangle {
-        id: backgroundRect
-        width: 200
-        height: 150
-        radius: 5
-        anchors.centerIn: parent
-        color: "red"
-
-        Rectangle {
-            id: dropShadowRect
-            property real offset: Math.min(parent.width*0.025, parent.height*0.025)
-            color: "purple"
-            width: parent.width
-            height: parent.height
-            z: -1
-            opacity: 0.75
-            radius: backgroundRect.radius + 2
-            anchors.left: parent.left
-            anchors.leftMargin: -offset
-            anchors.top: parent.top
-            anchors.topMargin: offset
-        }
-    }
     }
 
     property real startGlobalX: 0

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>radial-shadow.png</file>
+        <file>radial-shadow-invert.png</file>
     </qresource>
 </RCC>
