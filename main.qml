@@ -27,7 +27,7 @@ Window {
         width: 200
         height: width
         radius: Math.max(width/2, height/2)
-        color: dragMouseArea.containsMouse ? "black" : "white"
+        color: dragMouseArea.active ? "black" : "white"
 
         Item {
             id: dragIndicator
@@ -43,9 +43,9 @@ Window {
                     fill: dragIndicatorRect
                     margins: -10
                 }
-                source: dragMouseArea.containsMouse ? "qrc:/radial-shadow-invert.png" : "qrc:/radial-shadow.png"
+                source: dragMouseArea.active ? "qrc:/radial-shadow-invert.png" : "qrc:/radial-shadow.png"
                 smooth: true
-                opacity: dragMouseArea.containsMouse ? 1 : 0.2
+                opacity: dragMouseArea.active ? 1 : 0.2
             }
 
             Rectangle {
@@ -71,10 +71,12 @@ Window {
         anchors.fill: parent
         enabled: true
         cursorShape: Qt.ArrowCursor
+        property bool active: false
         onPressed:{
             if (!dragArea.contains(mapToItem(dragArea, Qt.point(mouse.x, mouse.y)))) {
                 return;
             }
+            active = true;
 
             const globalPos = mapToGlobal(mouse.x, mouse.y);
             startGlobalX = globalPos.x;
@@ -87,6 +89,11 @@ Window {
             speed = 0;
         }
         onReleased: {
+            if (!active) {
+                return;
+            }
+
+            active = false;
             Cursor.setPosition(startGlobalX, startGlobalY);
             dragIndicator.x = dragIndicator.defaultX;
             dragIndicator.y = dragIndicator.defaultY;
@@ -96,6 +103,10 @@ Window {
             cursorShape = Qt.ArrowCursor;
         }
         onPositionChanged: {
+            if (!active) {
+                return;
+            }
+
             var newPos = mapToItem(dragArea, mouse.x, mouse.y);
             const origPos = newPos;
             var changed = false;
